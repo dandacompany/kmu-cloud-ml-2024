@@ -1,0 +1,4 @@
+.conda/
+.history/
+.DS_Store
+.env
