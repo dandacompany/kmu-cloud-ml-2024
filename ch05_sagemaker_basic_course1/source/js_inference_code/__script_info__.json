@@ -1,0 +1,8 @@
+{
+    "FileName": "__script_info__.json",
+    "Framework": "catboost",
+    "ModelId": "none",
+    "Scope": "inference",
+    "Task": "classification",
+    "Version": "1.1.2"
+}

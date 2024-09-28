@@ -1,0 +1,8 @@
+{
+    "FileName": "__script_info__.json",
+    "Framework": "catboost",
+    "ModelId": "none",
+    "Scope": "transfer_learning",
+    "Task": "classification",
+    "Version": "1.2.0"
+}

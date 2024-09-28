@@ -1,0 +1,10 @@
+tenacity==8.0.1 \
+    --hash=sha256:f78f4ea81b0fabc06728c11dc2a8c01277bfc5181b321a4770471902e3eb844a
+plotly==5.1.0 \
+    --hash=sha256:d60412ee21d85102f67e5c7134d59feb5e42a5cbbfb1e580ad67cbdf7589d80c
+graphviz==0.17 \
+    --hash=sha256:5dadec94046d82adaae6019311a30e0487536d9d5a60d85451f0ba32f9fc6559
+catboost==1.0.1 \
+    --hash=sha256:518ba9f18f37b5f094dc3940fbf6152376143017112c6d66e3617f51f7ad41dd
+sagemaker_jumpstart_script_utilities==1.0.1
+sagemaker_jumpstart_prepack_script_utilities==1.0.0

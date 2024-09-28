@@ -1,0 +1,6 @@
+lib/catboost/catboost-1.0.1-cp38-none-manylinux1_x86_64.whl
+lib/graphviz/graphviz-0.17-py3-none-any.whl
+lib/plotly/plotly-5.1.0-py2.py3-none-any.whl
+lib/tenacity/tenacity-8.0.1-py3-none-any.whl
+lib/sagemaker_jumpstart_script_utilities/sagemaker_jumpstart_script_utilities-1.0.1-py2.py3-none-any.whl
+lib/sagemaker_jumpstart_prepack_script_utilities/sagemaker_jumpstart_prepack_script_utilities-1.0.0-py2.py3-none-any.whl

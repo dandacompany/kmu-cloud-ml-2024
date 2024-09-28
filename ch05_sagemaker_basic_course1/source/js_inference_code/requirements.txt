@@ -1,0 +1,4 @@
+/opt/ml/model/code/lib/catboost/catboost-1.2.2-cp310-cp310-manylinux2014_x86_64.whl
+/opt/ml/model/code/lib/graphviz/graphviz-0.20.1-py3-none-any.whl
+/opt/ml/model/code/lib/plotly/plotly-5.18.0-py3-none-any.whl
+/opt/ml/model/code/lib/tenacity/tenacity-8.2.3-py3-none-any.whl
