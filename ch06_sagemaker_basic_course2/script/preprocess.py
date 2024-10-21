@@ -16,18 +16,33 @@ def preprocess_data(input_data_path, output_train_path, output_val_path, asset_p
     X = original_data.iloc[:, 1:]
     y = original_data.iloc[:, 0]
     
-    # 결측치 전처리
-    X[X == '?'] = np.nan
-    X['workclass'].fillna(X['workclass'].mode()[0], inplace=True)
-    X['occupation'].fillna(X['occupation'].mode()[0], inplace=True)
-    X['native-country'].fillna(X['native-country'].mode()[0], inplace=True)
+    # 결측치 처리
+    X = X.replace('?', np.nan)
+    
+    # 타겟 변수 인코딩
+    if y.dtype == 'object':
+        y = y.map({
+            '<=50K': 0,
+            '<=50K.': 0,
+            '>50K': 1,
+            '>50K.': 1
+        })
+    else:
+        print("타겟 변수가 이미 숫자형입니다.")
 
-    y = y.replace({
-        '<=50K': 0,
-        '<=50K.': 0,
-        '>50K': 1,
-        '>50K.': 1
-    })
+    # 범주형 변수와 수치형 변수 구분
+    categorical_features = X.select_dtypes(include=['object', 'category']).columns.tolist()
+    numeric_features = X.select_dtypes(include=['int64', 'float64']).columns.tolist()
+
+    # 범주형 변수에 'Unknown' 카테고리 추가 및 결측치 처리
+    for feature in categorical_features: 
+        X[feature] = X[feature].astype('category')
+        X[feature] = X[feature].cat.add_categories('Unknown')
+        X[feature] = X[feature].fillna('Unknown')
+
+    # 수치형 특성의 결측치는 중앙값으로 대체
+    for feature in numeric_features:
+        X[feature] = X[feature].fillna(X[feature].median())
     
     # 훈련 - 검증 데이터셋 분할
     X_train, X_val, y_train, y_val = train_test_split(X, y, test_size = 0.3, random_state = 2024)
@@ -40,8 +55,7 @@ def preprocess_data(input_data_path, output_train_path, output_val_path, asset_p
     
     # 레이블 인코딩
     encoders = {}
-    categorical_cols = X.select_dtypes(include=['object']).columns
-    for col in categorical_cols:
+    for col in categorical_features:
         encoder = LabelEncoder()
         X_train[col] = encoder.fit_transform(X_train[col])
         encoders[col] = encoder

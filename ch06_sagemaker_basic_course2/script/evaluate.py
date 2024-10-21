@@ -14,26 +14,38 @@ from sklearn.metrics import roc_auc_score, accuracy_score, precision_score, reca
 def preprocess_test_data(test_data, assets):
     """입력 데이터를 전처리합니다."""
     scaler, encoders, pca = assets
-    
-    numeric_cols = ['age', 'fnlwgt', 'education-num', 'capital-gain', 'capital-loss',
-       'hours-per-week']
 
     y = test_data['income']
     X = test_data.drop(columns=['income'])
 
-    # 전처리
-    y = y.replace({
-    '<=50K': 0,
-    '<=50K.': 0,
-    '>50K': 1,
-    '>50K.': 1
-})
+    # 결측치 처리
+    X = X.replace('?', np.nan)
     
-    X[X == '?'] = np.nan
-    X['workclass'].fillna(X['workclass'].mode()[0], inplace=True)
-    X['occupation'].fillna(X['occupation'].mode()[0], inplace=True)
-    X['native-country'].fillna(X['native-country'].mode()[0], inplace=True)
-    X[numeric_cols] = X[numeric_cols].astype('float64')
+    # 타겟 변수 인코딩
+    if y.dtype == 'object':
+        y = y.map({
+            '<=50K': 0,
+            '<=50K.': 0,
+            '>50K': 1,
+            '>50K.': 1
+        })
+    else:
+        print("타겟 변수가 이미 숫자형입니다.")
+
+    # 범주형 변수와 수치형 변수 구분
+    categorical_features = X.select_dtypes(include=['object', 'category']).columns.tolist()
+    numeric_features = X.select_dtypes(include=['int64', 'float64']).columns.tolist()
+
+    # 범주형 변수에 'Unknown' 카테고리 추가 및 결측치 처리
+    for feature in categorical_features: 
+        X[feature] = X[feature].astype('category')
+        X[feature] = X[feature].cat.add_categories('Unknown')
+        X[feature] = X[feature].fillna('Unknown')
+
+    # 수치형 특성의 결측치는 중앙값으로 대체
+    for feature in numeric_features:
+        X[feature] = X[feature].fillna(X[feature].median())
+        
     
     # 범주형 컬럼 레이블 인코딩
     for feature in encoders.keys() :
@@ -46,7 +58,7 @@ def preprocess_test_data(test_data, assets):
         X[feature] = le.transform(X[feature])
 
     # 스케일링
-    X[numeric_cols] = scaler.transform(X[numeric_cols])
+    X[numeric_features] = scaler.transform(X[numeric_features])
 
     # PCA 차원축소
     X_pca = pca.transform(X)
