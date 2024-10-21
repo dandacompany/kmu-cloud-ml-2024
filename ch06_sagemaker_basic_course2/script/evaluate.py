@@ -76,7 +76,7 @@ if __name__ == "__main__":
     
     # S3에서 asset 파일을 로컬로 복사
     s3 = boto3.client('s3')
-    bucket_name = 'dante-sagemaker'
+    bucket_name = 'dante-sagemaker' # 본인의 버킷명으로 반드시 수정하세요!
     project_name = 'income-prediction'
     
     # 자산 파일 로드

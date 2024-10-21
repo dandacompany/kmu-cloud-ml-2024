@@ -14,7 +14,7 @@ def model_fn(model_dir):
     
     # S3에서 asset 파일을 로컬로 복사
     s3 = boto3.client('s3')
-    bucket_name = 'dante-sagemaker'
+    bucket_name = 'dante-sagemaker' # 본인의 버킷명으로 반드시 수정하세요!
     project_name = 'income-prediction'
     scaler_key = f'{project_name}/asset/scaler.pkl'
     encoder_key = f'{project_name}/asset/encoder.pkl'
@@ -62,7 +62,6 @@ def preprocess_input_data(input_data, assets):
     X = pd.DataFrame(input_data, columns=original_feature_columns)
     X[X == '?'] = np.nan
 
-
     # 범주형 변수에 'Unknown' 카테고리 추가 및 결측치 처리
     for feature in (set(original_feature_columns) - set(numeric_columns)): 
         X[feature] = X[feature].astype('category')
@@ -71,11 +70,8 @@ def preprocess_input_data(input_data, assets):
 
     # 수치형 특성의 결측치는 중앙값으로 대체
     for feature in set(numeric_columns):
+        X[feature] = pd.to_numeric(X[feature], errors='coerce')
         X[feature] = X[feature].fillna(X[feature].median())
-    
-    # 숫자형 컬럼을 float64로 변환하기 전에 NaN 값을 처리합니다
-    for col in numeric_columns:
-        X[col] = pd.to_numeric(X[col], errors='coerce')
     
     X[numeric_columns] = X[numeric_columns].astype('float64')
     X[numeric_columns] = scaler.transform(X[numeric_columns])
