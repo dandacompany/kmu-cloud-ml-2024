@@ -4,3 +4,4 @@
 .env
 kmu-aws-ml-2024.code-workspace
 ch07_advanced_course1/dataset/
+ch09_advanced_course3/dataset/cifar10/
