@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Kinesis 이벤트 테스트</title>
+		<script src="https://sdk.amazonaws.com/js/aws-sdk-2.1001.0.min.js"></script>
+	</head>
+	<body>
+		<h1>Kinesis 이벤트 테스트</h1>
+		<button id="testButton">클릭하세요</button>
+		<p id="result"></p>
+
+		<script>
+			var streamName = "kmu-quiz-stream"; // 스트림 이름을 여러분의 스트림 이름으로 변경하세요
+			var identityPoolId =
+				"ap-northeast-2:161c835f-ec3b-488a-8816-121f6a219c2f"; // 자격 증명 풀 ID를 여러분의 자격 증명 풀 ID로 변경하세요
+
+			// AWS 설정
+			AWS.config.region = "ap-northeast-2";
+			AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+				IdentityPoolId: identityPoolId,
+			});
+
+			var kinesis;
+
+			// AWS SDK 초기화 확인
+			AWS.config.credentials.get(function (err) {
+				if (err) {
+					alert("자격 증명 오류: " + err.message);
+					document.getElementById("result").textContent =
+						"AWS 자격 증명 오류: " + err.message;
+				} else {
+					alert("자격 증명 성공적으로 로드됨");
+					// Kinesis 클라이언트 생성
+					kinesis = new AWS.Kinesis();
+					// 버튼 활성화
+					document.getElementById("testButton").disabled = false;
+				}
+			});
+
+			// 버튼 클릭 이벤트 처리
+			document.querySelectorAll("button").forEach((button) => {
+				button.addEventListener("click", function () {
+					if (!kinesis) {
+						alert("Kinesis 클라이언트가 아직 초기화되지 않았습니다.");
+						return;
+					}
+
+					var event = {
+						user_id: "user_" + Math.floor(Math.random() * 1000),
+						event_time: new Date().toISOString(),
+						event_type: "click",
+						event_text: this.textContent,
+						event_area: this.id,
+					};
+
+					// Kinesis에 이벤트 전송
+					var params = {
+						Data: JSON.stringify(event),
+						PartitionKey: event.user_id,
+						StreamName: streamName,
+					};
+
+					kinesis.putRecord(params, function (err, data) {
+						if (err) {
+							console.error("에러:", err);
+							document.getElementById("result").textContent =
+								"이벤트 전송 실패: " + err.message;
+						} else {
+							console.log("성공:", data);
+							document.getElementById("result").textContent =
+								"이벤트가 성공적으로 전송되었습니다.";
+						}
+					});
+				});
+			});
+		</script>
+	</body>
+</html>

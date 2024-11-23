@@ -1,0 +1,46 @@
+<script src="https://sdk.amazonaws.com/js/aws-sdk-2.1001.0.min.js"></script>
+<script>
+	var streamName = "kmu-quiz-stream"; // 스트림 이름을 여러분의 스트림 이름으로 변경하세요
+	var identityPoolId = "ap-northeast-2:161c835f-ec3b-488a-8816-121f6a219c2f"; // 자격 증명 풀 ID를 여러분의 자격 증명 풀 ID로 변경하세요
+
+	// AWS 설정
+	AWS.config.region = "ap-northeast-2";
+	AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+		IdentityPoolId: identityPoolId,
+	});
+
+	// AWS SDK 초기화 확인
+	AWS.config.credentials.get(function (err) {
+		if (err) {
+			console.log("자격 증명 오류: " + err.message);
+		} else {
+			console.log("자격 증명 성공적으로 로드됨");
+			// Kinesis 클라이언트 생성
+			var kinesis = new AWS.Kinesis();
+
+			var event = {
+				user_id: "user_" + Math.floor(Math.random() * 1000), // 사용자 ID
+				event_time: new Date().toISOString(), // 이벤트 발생 시간
+				event_type: "view", // 이벤트 타입
+				event_text: document.querySelector("#quiz-title").textContent, // 퀴즈 제목
+				event_area: "{{퀴즈ID}}", // 퀴즈 ID
+			};
+
+			// Kinesis에 이벤트 전송
+			var params = {
+				Data: JSON.stringify(event),
+				PartitionKey: event.user_id,
+				StreamName: streamName,
+			};
+
+			kinesis.putRecord(params, function (err, data) {
+				if (err) {
+					console.error("에러:", err);
+				} else {
+					console.log("성공:");
+					console.log(event);
+				}
+			});
+		}
+	});
+</script>

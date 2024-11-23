@@ -1,0 +1,28 @@
+<script src="https://sdk.amazonaws.com/js/aws-sdk-2.1001.0.min.js"></script>
+<script>
+	var streamName = "kmu-quiz-stream"; // 스트림 이름을 여러분의 스트림 이름으로 변경하세요
+	var identityPoolId = "ap-northeast-2:161c835f-ec3b-488a-8816-121f6a219c2f"; // 자격 증명 풀 ID를 여러분의 자격 증명 풀 ID로 변경하세요
+
+	// AWS 설정
+	AWS.config.region = "ap-northeast-2";
+	AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+		IdentityPoolId: identityPoolId,
+	});
+
+	var kinesis;
+
+	// AWS SDK 초기화 확인
+	AWS.config.credentials.get(function (err) {
+		if (err) {
+			alert("자격 증명 오류: " + err.message);
+			document.getElementById("result").textContent =
+				"AWS 자격 증명 오류: " + err.message;
+		} else {
+			alert("자격 증명 성공적으로 로드됨");
+			// Kinesis 클라이언트 생성
+			kinesis = new AWS.Kinesis();
+			// 버튼 활성화
+			document.getElementById("testButton").disabled = false;
+		}
+	});
+</script>
